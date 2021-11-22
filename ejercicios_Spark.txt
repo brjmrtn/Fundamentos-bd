@@ -1,0 +1,147 @@
+*****************************************SPARK************************************************
+
+			1. USANDO EL SHELL DE SPARK(MÓDULO1)
+
+
+	1.- Arrancar el shell de Spark
+			
+			spark-shell
+
+	2.- En la shell ejecutamos "sc"------------------> contexto básico de Spark, donde se crean el resto de variables. en la shell "sc"; en otros entornos instanciarlo explicitamente
+	
+	3.- Usando el comando de autocompletado sobre el SparkContext, se puede ver los métodos disponibles. La función de autocompletado, consiste en presionar el tabulador después de escribir el objeto sc seguido de un punto
+
+			sc.
+
+	    | 
+			<init>                           DRIVER_IDENTIFIER                
+			LEGACY_DRIVER_IDENTIFIER         RDD_SCOPE_KEY                    
+			RDD_SCOPE_NO_OVERRIDE_KEY        SPARK_JOB_DESCRIPTION            
+			SPARK_JOB_GROUP_ID               SPARK_JOB_INTERRUPT_ON_CANCEL    
+			StringToColumn                   _sqlContext                      
+			abs                              acos                             
+			add_months                       approxCountDistinct              
+			array                            array_contains                   
+			asc                              ascii                            
+			asin                             atan                             
+			atan2                            avg                              
+			base64                           bin                              
+			bitwiseNOT                       boolToBoolWritable               
+			booleanWritableConverter         broadcast                        
+			bytesToBytesWritable             bytesWritableConverter           
+			callUDF                          callUdf                          
+			cbrt                             ceil                             
+			classOf                          clearActiveContext               
+			clone                            coalesce
+			.....				......
+
+			sc. seguido tabulador muestra todos los métodos disponibles
+
+
+
+			2.- COMENZANDO CON LOS RDDs (MÓDULO 2)
+
+
+		A.- EXPLORACIÓN DE FICHERO PLANO 1
+
+
+	1.- Iniciar la shel de Spark: spark-shell
+
+	2.- Vamos a trabajar con datos en local
+		a.- Para acceder al fichero se coloca delante de la ruta la palabra "file:"
+	
+	3.- Crea una carpeta llamada "bit" en home de forma que se cree la ruta "home/BIT"-------> Al no tener permisos de creacion de archivos en la máquina virtual, decido usar otra ruta.
+		mkdir /home/cloudera/ejercicios
+		
+		a.- Copiar la carpeta data_spark a la maquina virtual
+	
+	4.- Copiar "relato.txt", se encuentra en data_spark, a la siguiente ruta donde se encuentra la carpeta BIT.
+
+	5.- Visualiza el contenido del fichero  a través del comando "cat", o con un editor como vi
+				
+				$ cat relato.txt
+				$ vi relato.txt
+
+	6.- Crea un RDD llamado "relato" que contenga el contenido del fichero utilizando el método "textFile"
+
+				val relato = sc.textFile("file:path/relato.txt")
+
+
+	7.- Una vez hecho, se observa que no se ha creado el RDD. Esto ocurrirá cuando ejecutemos una acción sobre el RDD
+
+	8.- Contar el número de líneas del RDD y observa el resultado. Si el resultado es 23 es correcto.
+
+				relato.count()
+
+	9.- Ejecuta el método "collect()" sobre el RDD y observa el resultado. REcuerda lo que comentamos durante el curso sobre cuando es recomendable el uso de este método
+				
+				relato.collect()
+
+				>>> res4: Array[String] = Array(Two roads diverged in a yellow wood,, And sorry I could not travel both, And be one traveler, long I stood, And looked down one as far as I could, To where it bent in the 					undergrowth;, "", Then took the other, as just as fair,, And having perhaps the better claim,
+					
+
+		B.- EXPLORACIÓN DE FICHERO PLANO 2
+				
+
+	1.- Copiar la carpeta weblogs contenida en la carpeta de ejercicios de Sparka "/home/BIT/data/weblogs"
+
+	2.- Escoge uno de los ficheros, ábrelo, y estudia como está estructurada cada una de sus lineas (datos que contiene, separadores(espacio), etc
+
+	3.- Crea una variable que contenga la ruta del fichero, por ejemplo file:/home/BIT/data/weblog/2013-09-15.log
+				
+				val path = "file:/home/BIT/data/weblogs/2013-09-15.log
+
+	4.- Crea un RDD con el contenido del fichero llamado logs
+				
+				val logs = sc.textFile(path)
+
+	6.- Crea un nuevo RDD, jplogs, que contenga solo las lineas del RDD que contienen la cadena de caracteres ".jpg". Puedes usar el método contains()
+
+				val jpglogs = logs.filter(x=>x.contains(".jpg"))
+
+	7.- Imprime en pantalla las 5 primeras lineas dejpglogs
+				
+				jpglogs.take(5)
+							
+	8.- Es posible anidar varios métodos en la misma línea. Crea una variable jpglogs2 que devuelva el número de lineas que contienen la cadena de carácteres ".jpg"
+				
+				val jpglogs2= logs.filter(x=>x.contains(".jpg")).count()
+
+	9.- Ahora vamos a comenzar a usar una de las funciones más importantes de Spark, la función "map()". Para ello, coge el RDD logs y calcula la longitud de las 5 primeras. Puedes usar la funciòn "size()" o "length()".
+
+				logs.map(x=>x.length).take(5)
+
+	10.- Imprime por pantalla cada una de las palabras que contiene cada una de las 5 primeras lineas del RDD logs. Puedes usar la función "split()"
+
+				logs.map(x=>x.split(" ")).take(5)
+
+	11.- Mapea el contenido de logs a un RDD "logwords" de arrays de palabras de cada linea
+
+				val logwords = logs.map(line=>line.split(" "))
+				
+	12.- Crea un nuevo RDD llamado "ips" a partir del RDD logs que contengan solamente las ips de cada linea (primer elemento de cada fila)
+
+				val ips=logs.map(line=>line.split(" ")(0))
+
+	13.- Imprime por pantalla las 5 primeras lineas de ips
+				
+				ips.take(5)
+
+	14.- Visualiza el contenido de ips con la función "collect()". Verás que no es demasiado intuitivo. Prueba a usar el comando foreach
+				
+				ips.collect()
+				ips.foreach(println)
+				
+	15.- Crea un bucle "for" para visualizar el contenido de las 10 primeras líneas de ips
+
+				for (x <- ips.take(10)) {println(x)}
+	
+	16.- Guarda el contenido de ips entero en un fichero de texto usando el método saveAsTextFile en la 
+
+
+				
+				
+
+	
+	
+
